@@ -28,12 +28,32 @@
         #endregion
 
         #region Non-public methods
+        private static Assembly GetAssembly()
+        {
+            Assembly loadedAssembly;
+            Assembly[] assems = AppDomain.CurrentDomain.GetAssemblies();
+            string test = assems[1].ToString();
+            foreach (Assembly assem in assems)
+                if (assem.ToString().StartsWith("SVM"))
+                {
+                    loadedAssembly = assem;
+                    return loadedAssembly;
+                }
+            return null;
+        }
         internal static IInstruction CompileInstruction(string opcode)
         {
             IInstruction instruction = null;
 
+            Assembly SVMAssembly = GetAssembly();
+            SVMAssembly.GetTypes();
+            
+            
+            Console.ReadKey();
+
             #region TASK 1 - TO BE IMPLEMENTED BY THE STUDENT
             #endregion
+
 
             return instruction;
         }
