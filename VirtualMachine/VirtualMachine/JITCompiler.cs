@@ -16,6 +16,8 @@
         #endregion
 
         #region Fields
+        private static Type[] SVMtypes = GetSVMTypes();
+        private static Type type;
         #endregion
 
         #region Constructors
@@ -28,30 +30,35 @@
         #endregion
 
         #region Non-public methods
-        private static Assembly GetAssembly()
+        private static Type[] GetSVMTypes()
         {
             Assembly loadedAssembly;
             Assembly[] assems = AppDomain.CurrentDomain.GetAssemblies();
-            string test = assems[1].ToString();
             foreach (Assembly assem in assems)
                 if (assem.ToString().StartsWith("SVM"))
                 {
                     loadedAssembly = assem;
-                    return loadedAssembly;
+                    SVMtypes = loadedAssembly.GetTypes();
+                    return SVMtypes;
                 }
-            return null;
+            return SVMtypes;    
         }
         internal static IInstruction CompileInstruction(string opcode)
         {
             IInstruction instruction = null;
 
-            Assembly SVMAssembly = GetAssembly();
-            SVMAssembly.GetTypes();
-            
-            
-            Console.ReadKey();
 
             #region TASK 1 - TO BE IMPLEMENTED BY THE STUDENT
+            for (int i = 0; i < SVMtypes.Length; i++)
+            {
+                //LoadString    
+                if (opcode.Equals(SVMtypes[i].Name.ToString(), StringComparison.InvariantCultureIgnoreCase))
+                {
+                    type = Type.GetType(SVMtypes[i].AssemblyQualifiedName);
+
+                    return (IInstruction)Activator.CreateInstance(type);
+                }
+            }
             #endregion
 
 
@@ -63,6 +70,16 @@
             IInstructionWithOperand instruction = null;
 
             #region TASK 1 - TO BE IMPLEMENTED BY THE STUDENT
+            for (int i = 0; i < SVMtypes.Length; i++)
+            {
+                //LoadString    
+                if (opcode.Equals(SVMtypes[i].Name.ToString(), StringComparison.InvariantCultureIgnoreCase))
+                {
+                    type = Type.GetType(SVMtypes[i].AssemblyQualifiedName);
+
+                    return (IInstructionWithOperand)Activator.CreateInstance(type);
+                }
+            }
             #endregion
 
             return instruction;
