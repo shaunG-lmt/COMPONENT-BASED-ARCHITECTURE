@@ -155,12 +155,19 @@ namespace SVM
             DateTime start = DateTime.Now;
 
             #region TASK 2 - TO BE IMPLEMENTED BY THE STUDENT
+            foreach (IInstruction instruction in program)
+            {
+                instruction.VirtualMachine = this;
+                
+                program[programCounter].Run();
+                programCounter++;
+            }
             #region TASKS 5 & 7 - MAY REQUIRE MODIFICATION BY THE STUDENT
             // For task 5 (debugging), you should construct a IDebugFrame instance and
             // call the Break() method on the IDebugger instance stored in the debugger field
             #endregion
             #endregion
-
+            
             long memUsed = System.Environment.WorkingSet;
             TimeSpan elapsed = DateTime.Now - start;
             Console.WriteLine(String.Format(

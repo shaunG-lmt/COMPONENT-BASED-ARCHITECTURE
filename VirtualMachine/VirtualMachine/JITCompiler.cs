@@ -43,6 +43,7 @@
                 }
             return SVMtypes;    
         }
+        #endregion
         internal static IInstruction CompileInstruction(string opcode)
         {
             IInstruction instruction = null;
@@ -55,14 +56,13 @@
                 if (opcode.Equals(SVMtypes[i].Name.ToString(), StringComparison.InvariantCultureIgnoreCase))
                 {
                     type = Type.GetType(SVMtypes[i].AssemblyQualifiedName);
-
-                    return (IInstruction)Activator.CreateInstance(type);
+                    // CHECK IMPLEMENTS IISTRUCTION BEFORE RETURN 1 MARK
+                    instruction = (IInstruction)Activator.CreateInstance(type);
+                    return instruction;
                 }
             }
-            #endregion
-
-
             return instruction;
+            #endregion
         }
 
         internal static IInstruction CompileInstruction(string opcode, params string[] operands)
@@ -76,15 +76,23 @@
                 if (opcode.Equals(SVMtypes[i].Name.ToString(), StringComparison.InvariantCultureIgnoreCase))
                 {
                     type = Type.GetType(SVMtypes[i].AssemblyQualifiedName);
+                    //PropertyInfo parameters = type.GetProperty("Operands");
+                    //parameters.SetValue(SVMtypes[i].AssemblyQualifiedName, parameters, null);
 
-                    return (IInstructionWithOperand)Activator.CreateInstance(type);
+
+                    //instruction = (IInstructionWithOperand)Activator.CreateInstance(type);
+
+
+                    Object obj = Activator.CreateInstance(type);
+                    Type testtype = obj.GetType();
+                    PropertyInfo property = testtype.GetProperty("Operands");
+                    property.SetValue(obj, operands);
+                    instruction = (IInstructionWithOperand) obj;
+                    return instruction;
                 }
             }
-            #endregion
-
             return instruction;
+            #endregion
         }
-        #endregion
-
     }
 }
