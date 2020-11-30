@@ -8,3 +8,8 @@ subtract
 loadstring "The result is"
 writestring
 writestring
+loadstring "Incr Decr Testing"
+writestring
+loadint 21
+incr
+decr
