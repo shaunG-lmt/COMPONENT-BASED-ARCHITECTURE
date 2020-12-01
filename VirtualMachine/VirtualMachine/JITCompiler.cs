@@ -76,19 +76,11 @@
                 if (opcode.Equals(SVMtypes[i].Name.ToString(), StringComparison.InvariantCultureIgnoreCase))
                 {
                     type = Type.GetType(SVMtypes[i].AssemblyQualifiedName);
-                    //PropertyInfo parameters = type.GetProperty("Operands");
-                    //parameters.SetValue(SVMtypes[i].AssemblyQualifiedName, parameters, null);
-
-
-                    //instruction = (IInstructionWithOperand)Activator.CreateInstance(type);
-
-
+ 
                     Object obj = Activator.CreateInstance(type);
-                    Type testtype = obj.GetType();
-                    PropertyInfo property = testtype.GetProperty("Operands");
+                    PropertyInfo property = type.GetProperty("Operands");
                     property.SetValue(obj, operands);
-                    instruction = (IInstructionWithOperand) obj;
-                    return instruction;
+                    return (IInstructionWithOperand) obj;
                 }
             }
             return instruction;
