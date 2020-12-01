@@ -64,7 +64,7 @@
         {
             try
             {
-                if (VirtualMachine.Stack.Count = 0)
+                if (VirtualMachine.Stack.Count == 0)
                 {
                     throw new SvmRuntimeException(String.Format(BaseInstruction.StackUnderflowMessage, 
                                                     this.ToString(), VirtualMachine.ProgramCounter));
