@@ -71,7 +71,8 @@
                 }
                 
                 int op1 = (int)VirtualMachine.Stack.Pop();
-                VirtualMachine.Stack.Push(op1++);
+                op1++;
+                VirtualMachine.Stack.Push(op1);
             }
             catch (InvalidCastException)
             {
