@@ -14,7 +14,7 @@ namespace SVM
     /// <summary>
     /// Implements the Simple Virtual Machine (SVM) virtual machine 
     /// </summary>
-    public sealed class SvmVirtualMachine 
+    public sealed class SvmVirtualMachine : IVirtualMachine
     {
         #region Constants
         private const string CompilationErrorMessage = "An SVM compilation error has occurred at line {0}.\r\n\r\n{1}";
