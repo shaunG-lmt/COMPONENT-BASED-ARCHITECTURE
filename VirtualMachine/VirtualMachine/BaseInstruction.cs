@@ -64,7 +64,7 @@
         #region IInstruction Members
         public abstract void Run();
 
-        public IVirtualMachine VirtualMachine
+        public virtual IVirtualMachine VirtualMachine
         {
             get
             {
