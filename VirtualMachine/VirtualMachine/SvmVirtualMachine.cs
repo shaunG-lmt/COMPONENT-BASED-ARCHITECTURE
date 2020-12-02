@@ -88,7 +88,7 @@ namespace SVM
         public int ProgramCounter
         {
             #region TASK 1 - TO BE IMPLEMENTED BY THE STUDENT
-            get { return ProgramCounter; }
+            get { return programCounter; }
             #endregion
         }
         #endregion
