@@ -30,8 +30,6 @@ namespace SVM_Testing
             mockIncr.Setup(p => p.VirtualMachine).Returns(mockVm.Object);
             mockIncr.CallBase = true;
             #endregion
-
-
             try
             {
                 mockIncr.Object.Run();
@@ -55,8 +53,6 @@ namespace SVM_Testing
             mockIncr.Setup(p => p.VirtualMachine).Returns(mockVm.Object);
             mockIncr.CallBase = true;
             #endregion
-
-
             try
             {
                 mockIncr.Object.Run();
@@ -69,7 +65,7 @@ namespace SVM_Testing
             Assert.Fail("An exception should have been thrown...");
         }
         [TestMethod()]
-        public void IncrTest_InvalidStack()
+        public void IncrTest_EmptyStack()
         {
             #region Mock Setup
             mockVm.Setup(p => p.ProgramCounter).Returns(1);
@@ -80,7 +76,81 @@ namespace SVM_Testing
             mockIncr.Setup(p => p.VirtualMachine).Returns(mockVm.Object);
             mockIncr.CallBase = true;
             #endregion
+            try
+            {
+                mockIncr.Object.Run();
+            }
+            catch (Exception e)
+            {
+                Assert.AreEqual(e.Message, "An error has occurred in executing the SML program. A stack underflow error has occurred. ( at [line IncrProxy] 1)");
+                return;
+            }
+            Assert.Fail("An exception should have been thrown...");
+        }
+        [TestMethod]
+        public void DecrTest_ValidInput()
+        {
+            #region Validation Values
+            Stack validationStack = new Stack();
+            validationStack.Push(7);
+            #endregion
 
+            #region Mock Setup
+            mockVm.Setup(p => p.ProgramCounter).Returns(1);
+            Stack testStack = new Stack();
+            testStack.Push(8);
+            mockVm.Setup(p => p.Stack).Returns(testStack);
+
+            Mock<Decr> mockIncr = new Mock<Decr>();
+            mockIncr.Setup(p => p.VirtualMachine).Returns(mockVm.Object);
+            mockIncr.CallBase = true;
+            #endregion
+            try
+            {
+                mockIncr.Object.Run();
+            }
+            catch
+            {
+                Assert.Fail("Unexpected Exception");
+            }
+            Assert.AreEqual(mockIncr.Object.VirtualMachine.Stack.Peek(), validationStack.Peek());
+        }
+        [TestMethod()]
+        public void DecrTest_InvalidValue()
+        {
+            #region Mock Setup
+            mockVm.Setup(p => p.ProgramCounter).Returns(1);
+            Stack testStack = new Stack();
+            testStack.Push("String");
+            mockVm.Setup(p => p.Stack).Returns(testStack);
+
+            Mock<Incr> mockIncr = new Mock<Incr>();
+            mockIncr.Setup(p => p.VirtualMachine).Returns(mockVm.Object);
+            mockIncr.CallBase = true;
+            #endregion
+            try
+            {
+                mockIncr.Object.Run();
+            }
+            catch (Exception e)
+            {
+                Assert.AreEqual(e.Message, "An error has occurred in executing the SML program. The operand on the stack is of the wrong type. (at [line IncrProxy] 1 )");
+                return;
+            }
+            Assert.Fail("An exception should have been thrown...");
+        }
+        [TestMethod()]
+        public void DecrTest_EmptyStack()
+        {
+            #region Mock Setup
+            mockVm.Setup(p => p.ProgramCounter).Returns(1);
+            Stack testStack = new Stack();
+            mockVm.Setup(p => p.Stack).Returns(testStack);
+
+            Mock<Incr> mockIncr = new Mock<Incr>();
+            mockIncr.Setup(p => p.VirtualMachine).Returns(mockVm.Object);
+            mockIncr.CallBase = true;
+            #endregion
             try
             {
                 mockIncr.Object.Run();
@@ -94,4 +164,3 @@ namespace SVM_Testing
         }
     }
 }
-//A stack underflow error has occurred. ( at [line {0}] {1})
