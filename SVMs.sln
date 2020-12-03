@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SML Extensions", "SML Exten
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Debugger", "Debugger\Debugger.csproj", "{2FDBDE0A-5E27-441F-96C9-76E01FCC5E64}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SVM Testing", "SVM Testing\SVM Testing.csproj", "{D0054B0E-B7DE-4A96-A958-777448EF9FE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SVM Testing", "SVM Testing\SVM Testing.csproj", "{D0054B0E-B7DE-4A96-A958-777448EF9FE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SVMDebuggerApplication", "SVMDebuggerApplication\SVMDebuggerApplication.csproj", "{50DB0AA3-D2C3-4861-AAD7-1038B9F57BBD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,18 @@ Global
 		{D0054B0E-B7DE-4A96-A958-777448EF9FE1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{D0054B0E-B7DE-4A96-A958-777448EF9FE1}.Release|x86.ActiveCfg = Release|Any CPU
 		{D0054B0E-B7DE-4A96-A958-777448EF9FE1}.Release|x86.Build.0 = Release|Any CPU
+		{50DB0AA3-D2C3-4861-AAD7-1038B9F57BBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50DB0AA3-D2C3-4861-AAD7-1038B9F57BBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50DB0AA3-D2C3-4861-AAD7-1038B9F57BBD}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{50DB0AA3-D2C3-4861-AAD7-1038B9F57BBD}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{50DB0AA3-D2C3-4861-AAD7-1038B9F57BBD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{50DB0AA3-D2C3-4861-AAD7-1038B9F57BBD}.Debug|x86.Build.0 = Debug|Any CPU
+		{50DB0AA3-D2C3-4861-AAD7-1038B9F57BBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50DB0AA3-D2C3-4861-AAD7-1038B9F57BBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{50DB0AA3-D2C3-4861-AAD7-1038B9F57BBD}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{50DB0AA3-D2C3-4861-AAD7-1038B9F57BBD}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{50DB0AA3-D2C3-4861-AAD7-1038B9F57BBD}.Release|x86.ActiveCfg = Release|Any CPU
+		{50DB0AA3-D2C3-4861-AAD7-1038B9F57BBD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
