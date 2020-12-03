@@ -17,6 +17,7 @@
 
         #region Fields
         private static Type[] SVMtypes = GetSVMTypes();
+        private static List<IInstruction> instantiatedTypes;
         private static Type type;
         #endregion
 
@@ -54,10 +55,17 @@
             {
                 //LoadString    
                 if (opcode.Equals(SVMtypes[i].Name.ToString(), StringComparison.InvariantCultureIgnoreCase))
-                {
-                    type = Type.GetType(SVMtypes[i].AssemblyQualifiedName);
-                    // CHECK IMPLEMENTS IISTRUCTION BEFORE RETURN 1 MARK
-                    instruction = (IInstruction)Activator.CreateInstance(type);
+                { 
+                    try
+                    {
+                        Type.GetType(SVMtypes[i].AssemblyQualifiedName).GetInterface("IInstruction");
+                        // If instruction instance exists...
+                        instruction = (IInstruction)Activator.CreateInstance(Type.GetType(SVMtypes[i].AssemblyQualifiedName));
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Invalid instruction...... exception message.....");
+                    }
                     return instruction;
                 }
             }
