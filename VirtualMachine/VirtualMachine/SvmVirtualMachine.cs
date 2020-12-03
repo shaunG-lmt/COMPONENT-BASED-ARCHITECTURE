@@ -26,6 +26,7 @@ namespace SVM
 
         #region Fields
         private IDebugger debugger = null;
+        private List<int> debugPoints = new List<int>();
         private List<IInstruction> program = new List<IInstruction>();
         private Stack stack = new Stack();
         private int programCounter = 0;
@@ -186,7 +187,7 @@ namespace SVM
         {
             #region TASK 5 & 7 - MAY REQUIRE MODIFICATION BY THE STUDENT
             #endregion
-
+            lineNumber++;
             string[] tokens = null;
             if (instruction.Contains("\""))
             {
@@ -203,7 +204,14 @@ namespace SVM
                 // Tokenize the instruction string by separating on spaces
                 tokens = instruction.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             }
-            
+
+            // Assess debug points
+            if (tokens[0].StartsWith("*"))
+            {
+                debugPoints.Add(lineNumber);
+                tokens[0] = tokens[0].TrimStart('*', ' ');
+                
+            }
 
             // Ensure the correct number of operands
             if (tokens.Length > 3)
