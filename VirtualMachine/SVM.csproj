@@ -24,6 +24,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SVMDebuggerApplication\SVMDebuggerApplication.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Sample.sml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
