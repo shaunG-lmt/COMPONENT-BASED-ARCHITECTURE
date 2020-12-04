@@ -9,6 +9,7 @@ namespace SVM
     using System.Collections.Generic;
     using System.IO;
     using SVM.VirtualMachine;
+    using System.Reflection;
     #endregion
 
     /// <summary>
@@ -39,6 +40,31 @@ namespace SVM
             #region Task 5 - Debugging 
             // Do something here to find and create an instance of a type which implements 
             // the IDebugger interface, and assign it to the debugger field
+
+            Assembly loadedAssembly;
+            Assembly[] assems = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (Assembly assem in assems)
+            {
+                if (assem.ToString().StartsWith("SVM"))
+                {
+                    loadedAssembly = assem;
+                    foreach (Type type in loadedAssembly.GetTypes())
+                    {
+                        try
+                        {
+                            type.GetInterface("IDebugger");
+                            debugger = (IDebugger) Activator.CreateInstance(type);
+                        }
+                        catch
+                        {
+                            // TODO: Get exception message for no debugger.
+                            Console.Write("Debugger not found... Some exception message from SVM :D");
+                            break;
+                        }
+                    }
+                }
+            }
+
             #endregion
         }
         #endregion
@@ -156,12 +182,24 @@ namespace SVM
             DateTime start = DateTime.Now;
 
             #region TASK 2 - TO BE IMPLEMENTED BY THE STUDENT
+            
+            
             foreach (IInstruction instruction in program)
             {
                 instruction.VirtualMachine = this;
-                
-                program[programCounter].Run();
+
                 programCounter++;
+
+                foreach (int point in debugPoints)
+                {
+                    if (point == programCounter)
+                    {
+                        debugger.Break(new DebugFrame(instruction, program));
+                    }
+                }
+
+                program[programCounter].Run();
+                
             }
             #region TASKS 5 & 7 - MAY REQUIRE MODIFICATION BY THE STUDENT
             // For task 5 (debugging), you should construct a IDebugFrame instance and
