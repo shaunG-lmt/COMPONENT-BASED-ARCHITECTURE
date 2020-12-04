@@ -1,24 +1,29 @@
-﻿using System;
+﻿using SVM;
+using SVM.VirtualMachine.Debug;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SVM.VirtualMachine.Debug;
-using SVM.VirtualMachine;
-using SVM.SimpleMachineLanguage;
-using SVM;
+using System.Windows.Forms;
 
-namespace Debuggers
+
+namespace Debugger
 {
     public class Debugger : IDebugger
     {
-        #region TASK 5 - TO BE IMPLEMENTED BY THE STUDENT
-        #endregion
         public SvmVirtualMachine VirtualMachine { set => throw new NotImplementedException(); }
 
+        public Debugger()
+        {
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+        }
+
+        [STAThread]
         public void Break(IDebugFrame debugFrame)
         {
-            
-            throw new NotImplementedException();
+            Application.Run(new Form1());
         }
     }
 }

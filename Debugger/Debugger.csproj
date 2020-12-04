@@ -1,7 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -18,8 +19,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SVMDebuggerApplication\SVMDebuggerApplication.csproj" />
     <ProjectReference Include="..\VirtualMachine\SVM.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Form1.cs" />
   </ItemGroup>
 
 </Project>
