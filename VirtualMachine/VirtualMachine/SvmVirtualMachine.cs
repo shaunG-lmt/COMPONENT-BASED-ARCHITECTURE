@@ -41,30 +41,27 @@ namespace SVM
             // Do something here to find and create an instance of a type which implements 
             // the IDebugger interface, and assign it to the debugger field
 
-            Assembly loadedAssembly;
-            Assembly[] assems = AppDomain.CurrentDomain.GetAssemblies();
-            foreach (Assembly assem in assems)
+            foreach (string path in Directory.EnumerateFiles(Environment.CurrentDirectory))
             {
-                if (assem.ToString().StartsWith("SVM"))
+                /* Assembly assembly = Assembly.ReflectionOnlyLoadFrom(path);
+                 JON: System.PlatformNotSupportedException, hard code time :( */
+                if (path.Contains("Debugger.dll"))
                 {
-                    loadedAssembly = assem;
-                    foreach (Type type in loadedAssembly.GetTypes())
+                    Assembly assembly = Assembly.LoadFrom(path);
+                    Type[] debugTypes = assembly.GetTypes();
+                    foreach (Type debugType in debugTypes)
                     {
-                        try
+                        if (debugType.GetInterface("IDebugger") == null)
+                        { }
+                        else
                         {
-                            type.GetInterface("IDebugger");
-                            debugger = (IDebugger) Activator.CreateInstance(type);
-                        }
-                        catch
-                        {
-                            // TODO: Get exception message for no debugger.
-                            Console.Write("Debugger not found... Some exception message from SVM :D");
+                            debugger = (IDebugger) Activator.CreateInstance(debugType);
                             break;
                         }
+                        Console.WriteLine("Debugger.dll does not implement the IDebugger interface.... SVM EXCEPTION???");
                     }
                 }
             }
-
             #endregion
         }
         #endregion
