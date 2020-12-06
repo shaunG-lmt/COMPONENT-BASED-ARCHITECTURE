@@ -64,6 +64,7 @@ namespace SVM
                 {
                     Assembly assembly = Assembly.LoadFrom(path);
                     Type[] debugTypes = assembly.GetTypes();
+
                     foreach (Type debugType in debugTypes)
                     {
                         if (debugType.GetInterface("IDebugger") == null)
@@ -225,19 +226,20 @@ namespace SVM
             foreach (IInstruction instruction in program)
             {
                 instruction.VirtualMachine = this;
-
+                program[programCounter].Run();
                 programCounter++;
 
                 foreach (int point in debugPoints)
                 {
                     if (point == programCounter)
                     {
-                        debugger.Break(new DebugFrame(instruction, program));
+                        IDebugFrame debugFrame = new DebugFrame(instruction, program);
+                        debugger.Break(debugFrame);
                     }
                 }
 
-                program[programCounter].Run();
                 
+
             }
             #region TASKS 5 & 7 - MAY REQUIRE MODIFICATION BY THE STUDENT
             // For task 5 (debugging), you should construct a IDebugFrame instance and
