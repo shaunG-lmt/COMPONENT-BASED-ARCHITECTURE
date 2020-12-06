@@ -72,6 +72,7 @@ namespace SVM
                         else
                         {
                             debugger = (IDebugger) Activator.CreateInstance(debugType);
+                           
                             break;
                         }
                         Console.WriteLine("Debugger.dll does not implement the IDebugger interface.... SVM EXCEPTION???");
@@ -219,10 +220,9 @@ namespace SVM
         private void Run()
         {
             DateTime start = DateTime.Now;
+            debugger.VirtualMachine = this;
+            #region TASK 2 - TO BE IMPLEMENTED BY THE STUDENT      
 
-            #region TASK 2 - TO BE IMPLEMENTED BY THE STUDENT
-            
-            
             foreach (IInstruction instruction in program)
             {
                 instruction.VirtualMachine = this;
@@ -234,12 +234,9 @@ namespace SVM
                     if (point == programCounter)
                     {
                         IDebugFrame debugFrame = new DebugFrame(instruction, program);
-                        debugger.Break(debugFrame);
+                        debugger.Break(debugFrame);                      
                     }
                 }
-
-                
-
             }
             #region TASKS 5 & 7 - MAY REQUIRE MODIFICATION BY THE STUDENT
             // For task 5 (debugging), you should construct a IDebugFrame instance and
