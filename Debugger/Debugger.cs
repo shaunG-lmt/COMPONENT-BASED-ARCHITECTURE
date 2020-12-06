@@ -12,11 +12,13 @@ namespace Debugger
 {
     public class Debugger : IDebugger
     {
-        public volatile bool running = false;
-        public SvmVirtualMachine vm = null;
-        string[] instructions;
-        string[] stackValues;
-
+        private volatile static bool _isContinuePressed;
+        private bool running = false;
+        private SvmVirtualMachine vm = null;
+        static string[] instructions = { "test", "test 3", "test 6" };
+        static string[] stackValues = { "test", "test 3", "test 6" };
+        public static Form form = new Form1(instructions, stackValues, "test 3" );
+        Thread thread = new Thread(new ThreadStart(delegate () { Application.Run(form); }));
         public SvmVirtualMachine VirtualMachine 
         { /*set => throw new NotImplementedException();*/
             get { return vm; }
@@ -29,6 +31,11 @@ namespace Debugger
                 vm = value;
             }
         }
+        public static bool IsContinuePressed
+        {
+            get { return _isContinuePressed; }
+            set { _isContinuePressed = value;  }
+        }
         public Debugger()
         {
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
@@ -39,8 +46,21 @@ namespace Debugger
         [STAThread]
         public void Break(IDebugFrame debugFrame)
         {
-            
-            Thread thread = new Thread(new ThreadStart(delegate() { Application.Run(new Form1()); } ));
+            if (!running)
+            {
+                running = true;
+                thread.Start();
+            }
+            else
+            {
+                IsContinuePressed = false;
+                // Create instance of form before adding to thread... run thread... on cont. invoke form instance to update values
+                //Form1.invoke
+                //form.Invoke(form.);
+            }
+            while (!_isContinuePressed) { }
+
+            return;
         }
     }
 }
