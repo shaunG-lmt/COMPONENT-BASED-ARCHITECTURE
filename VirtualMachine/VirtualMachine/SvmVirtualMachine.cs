@@ -10,6 +10,7 @@ namespace SVM
     using System.IO;
     using SVM.VirtualMachine;
     using System.Reflection;
+    using System.Runtime.InteropServices;
     #endregion
 
     /// <summary>
@@ -17,6 +18,20 @@ namespace SVM
     /// </summary>
     public sealed class SvmVirtualMachine : IVirtualMachine
     {
+        #region stupid console disappearance act fix
+        [DllImport("Kernel32.dll")]
+        private static extern bool AllocConsole();
+
+        [DllImport("Kernel32.dll")]
+        private static extern bool FreeConsole();
+
+        [DllImport("Kernel32.dll")]
+        private static extern IntPtr GetConsoleWindow();
+
+        [DllImport("Kernel32.dll")]
+        private static extern IntPtr ShowWindow(IntPtr hWnd, int nCmdShow);
+        #endregion
+
         #region Constants
         private const string CompilationErrorMessage = "An SVM compilation error has occurred at line {0}.\r\n\r\n{1}";
         private const string RuntimeErrorMessage = "An SVM runtime error has occurred.\r\n\r\n{0}";
@@ -69,6 +84,22 @@ namespace SVM
         #region Entry Point
         static void Main(string[] args)
         {
+            const int SW_HIDE = 0, SW_SHOW = 5; //WinAPI #defines
+            IntPtr hWnd = SvmVirtualMachine.GetConsoleWindow();
+
+            if (hWnd == IntPtr.Zero)
+            {
+                if (!SvmVirtualMachine.AllocConsole())
+                {
+                    return;
+                }
+            }
+
+            else
+            {
+                SvmVirtualMachine.ShowWindow(hWnd, SW_SHOW);
+            }
+
             if (CommandLineIsValid(args))
             {
                 SvmVirtualMachine vm = new SvmVirtualMachine();
@@ -77,13 +108,23 @@ namespace SVM
                     vm.Compile(args[0]);
                     vm.Run();
                 }
-                catch(SvmCompilationException)
+                catch (SvmCompilationException)
                 {
                 }
                 catch (SvmRuntimeException err)
                 {
                     Console.WriteLine(RuntimeErrorMessage, err.Message);
                 }
+            }
+
+            if (hWnd == IntPtr.Zero)
+            {
+                SvmVirtualMachine.FreeConsole();
+            }
+
+            else
+            {
+                SvmVirtualMachine.ShowWindow(hWnd, SW_HIDE);
             }
         }
         #endregion
@@ -210,6 +251,7 @@ namespace SVM
                                         "\r\n\r\nExecution finished in {0} milliseconds. Memory used = {1} bytes",
                                         elapsed.Milliseconds,
                                         memUsed));
+            Console.Read();
         }
 
         /// <summary>
