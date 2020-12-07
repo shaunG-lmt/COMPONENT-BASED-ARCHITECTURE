@@ -40,8 +40,14 @@
                 if (assem.ToString().StartsWith("SVM"))
                 {
                     loadedAssembly = assem;
-                    SVMtypes = loadedAssembly.GetTypes();
-                    return SVMtypes;
+                    try
+                    {
+                        return loadedAssembly.GetTypes();
+                    }
+                    catch (Exception e)
+                    {
+                        throw new SvmCompilationException("Could not get types from: " + loadedAssembly.FullName, e);
+                    }
                 }
             return SVMtypes;    
         }
@@ -50,37 +56,38 @@
         {
             IInstruction instruction = null;
 
-
             #region TASK 1 - TO BE IMPLEMENTED BY THE STUDENT
             for (int i = 0; i < SVMtypes.Length; i++)
-            { 
-                if (opcode.Equals(SVMtypes[i].Name.ToString(), StringComparison.InvariantCultureIgnoreCase))
-                { 
-                    try
+            {
+                try
+                {
+                    if (Type.GetType(SVMtypes[i].AssemblyQualifiedName).GetInterface("IInstruction") != null)
                     {
-                        Type.GetType(SVMtypes[i].AssemblyQualifiedName).GetInterface("IInstruction"); // TODO FIX: If this fails -> exception.
-                        // Check for existing instance -> exists -> reuse.
-                        foreach (IInstruction instance in instantiatedTypes)
+                        if (opcode.Equals(SVMtypes[i].Name.ToString(), StringComparison.InvariantCultureIgnoreCase))
                         {
-                            if (instance.ToString().Split(" ")[0] == Type.GetType(SVMtypes[i].AssemblyQualifiedName).Name)
+                            // Check for existing instance -> exists -> reuse.
+                            foreach (IInstruction instance in instantiatedTypes)
                             {
-                                return instance;
+                                if (instance.ToString().Split(" ")[0] == Type.GetType(SVMtypes[i].AssemblyQualifiedName).Name)
+                                {
+                                    return instance;
+                                }
                             }
+                            // Instance not found -> add new.
+                            instantiatedTypes.Add((IInstruction)Activator.CreateInstance(Type.GetType(SVMtypes[i].AssemblyQualifiedName)));
+                            return instantiatedTypes.Last();
                         }
-                        // Instance not found -> add new.
-                        instantiatedTypes.Add((IInstruction)Activator.CreateInstance(Type.GetType(SVMtypes[i].AssemblyQualifiedName)));
-                        return instantiatedTypes.Last();
                     }
-                    catch
-                    {
-                        // throw SVMexception.
-                        Console.WriteLine("Invalid instruction interface...... exception message.....");
-                    }
-                    return instruction;
                 }
+                catch (Exception e)
+                {
+                    throw new SvmCompilationException("Type could not be loaded for instruction: " + opcode, e);
+                }
+                
             }
-            return instruction;
             #endregion
+
+            return instruction; // null
         }
 
         internal static IInstruction CompileInstruction(string opcode, params string[] operands)
@@ -89,69 +96,29 @@
 
             #region TASK 1 - TO BE IMPLEMENTED BY THE STUDENT
             for (int i = 0; i < SVMtypes.Length; i++)
-            { 
-                if (opcode.Equals(SVMtypes[i].Name.ToString(), StringComparison.InvariantCultureIgnoreCase))
+            {
+                try
                 {
-                    try
+                    if (Type.GetType(SVMtypes[i].AssemblyQualifiedName).GetInterface("IInstruction") != null)
                     {
-                        Type.GetType(SVMtypes[i].AssemblyQualifiedName).GetInterface("IInstruction"); // If this fails -> exception.
-                        #region JON PLS EXPLAIN HOW TO REPLACE THE OPERANDS OF AN INSTANCED TYPE I CANNOT.
-                        // ??? BECAUSE INSTANCE STILL NEEDS TO BE USED LATER ON IN THE CODE ITS NOT POSSIBLE OR WOULD BREAK ANYWAYS ???
-                        //foreach (IInstruction instance in instantiatedTypes)
-                        //{
-                        //    if (instance.ToString().Split(" ")[0] == "*") // Change to any basic instruction. Set to * for task 5.
-                        //    {
-                        //        if (instance.ToString().Split(" ")[1] == Type.GetType(SVMtypes[i].AssemblyQualifiedName).Name)
-                        //        {
-                        //            PropertyInfo property = Type.GetType(SVMtypes[i].AssemblyQualifiedName).GetProperty("Operands");
-                        //            property.SetValue(instance, operands);
-                        //            return instance;
-                        //        }
-                        //    }
-                        //    else
-                        //    {
-                        //        if (instance.ToString().Split(" ")[0] == Type.GetType(SVMtypes[i].AssemblyQualifiedName).Name)
-                        //        {
-                        //            PropertyInfo property = instance.GetType().GetProperty("Operands");
-                        //           /* IMPOSSIBLE JON PLS
-                        //            property.GetType().GetProperty("Item").SetValue(instance, operands, new object[] { 0 });
-                        //                //.GetValue(instance, null);
-                        //            //var why = test.GetType().GetProperty("Item");
-                        //                //.SetValue(instance, operands, new object[] { (int) 0 });
-                        //            //property.SetValue(instance, operands);
-                                       
-                        //            //.SetValue(x, operands, new object[] { (int)0 });
-                        //            //property.SetValue();
-                        //            */
-                        //            return instance;
-                        //        }
-                        //    }
-                        //    break;
-                            
-                        //}
-                        //// Instance not found -> add new.
-                        //var newInstance = (IInstruction)Activator.CreateInstance(Type.GetType(SVMtypes[i].AssemblyQualifiedName));
-                        //PropertyInfo newProperty = Type.GetType(SVMtypes[i].AssemblyQualifiedName).GetProperty("Operands");
-                        //newProperty.SetValue(newInstance, operands);
-                        //instantiatedTypes.Add(newInstance);
-                        //return instantiatedTypes.Last();
-                        #endregion
+                        if (opcode.Equals(SVMtypes[i].Name.ToString(), StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            type = Type.GetType(SVMtypes[i].AssemblyQualifiedName);
+                            Object obj = Activator.CreateInstance(type);
+                            PropertyInfo property = type.GetProperty("Operands");
+                            property.SetValue(obj, operands);
+                            return (IInstructionWithOperand)obj;
+                        }
                     }
-                    catch
-                    {
-                        // throw SVMexception.
-                        Console.WriteLine("Invalid instruction interface...... exception message.....");
-                    }
-
-                    type = Type.GetType(SVMtypes[i].AssemblyQualifiedName);
-                    Object obj = Activator.CreateInstance(type);
-                    PropertyInfo property = type.GetProperty("Operands");
-                    property.SetValue(obj, operands);
-                    return (IInstructionWithOperand)obj;
+                }
+                catch (Exception e)
+                {
+                    throw new SvmCompilationException("Type could not be loaded for instruction: " + opcode, e);
                 }
             }
-            return instruction;
             #endregion
+
+            return instruction; // null
         }
     }
 }
