@@ -222,24 +222,30 @@ namespace SVM
             DateTime start = DateTime.Now;
             debugger.VirtualMachine = this;
             #region TASK 2 - TO BE IMPLEMENTED BY THE STUDENT      
-
-            foreach (IInstruction instruction in program)
+            if (program.Count > 0)
             {
-                instruction.VirtualMachine = this;
-                
-
-                foreach (int point in debugPoints)
+                foreach (IInstruction instruction in program)
                 {
-                    if (point == programCounter+1)
-                    {
-                        IDebugFrame debugFrame = new DebugFrame(instruction, program, programCounter);
-                        debugger.Break(debugFrame);                      
-                    }
-                }
+                    instruction.VirtualMachine = this;
 
-                program[programCounter].Run();
-                programCounter++;
+                    foreach (int point in debugPoints)
+                    {
+                        if (point == programCounter + 1)
+                        {
+                            IDebugFrame debugFrame = new DebugFrame(instruction, program, programCounter);
+                            debugger.Break(debugFrame);
+                        }
+                    }
+
+                    program[programCounter].Run();
+                    programCounter++;
+                }
             }
+            else
+            {
+                Console.WriteLine("File contains no instructions...");
+            }
+            
             #region TASKS 5 & 7 - MAY REQUIRE MODIFICATION BY THE STUDENT
             // For task 5 (debugging), you should construct a IDebugFrame instance and
             // call the Break() method on the IDebugger instance stored in the debugger field
@@ -268,7 +274,7 @@ namespace SVM
             lineNumber++;
             string[] tokens = null;
             if (instruction.Contains("\""))
-            { // loadstring
+            {
                 tokens = instruction.Split(new char[] { '\"' }, StringSplitOptions.RemoveEmptyEntries);
                 
                 // Remove any unnecessary whitespace
