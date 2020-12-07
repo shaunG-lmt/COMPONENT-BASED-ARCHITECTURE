@@ -53,13 +53,12 @@
 
             #region TASK 1 - TO BE IMPLEMENTED BY THE STUDENT
             for (int i = 0; i < SVMtypes.Length; i++)
-            {
-                //LoadString    
+            { 
                 if (opcode.Equals(SVMtypes[i].Name.ToString(), StringComparison.InvariantCultureIgnoreCase))
                 { 
                     try
                     {
-                        Type.GetType(SVMtypes[i].AssemblyQualifiedName).GetInterface("IInstruction"); // If this fails -> exception.
+                        Type.GetType(SVMtypes[i].AssemblyQualifiedName).GetInterface("IInstruction"); // TODO FIX: If this fails -> exception.
                         // Check for existing instance -> exists -> reuse.
                         foreach (IInstruction instance in instantiatedTypes)
                         {
