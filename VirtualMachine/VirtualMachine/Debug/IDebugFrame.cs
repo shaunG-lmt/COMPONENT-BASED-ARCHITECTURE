@@ -18,5 +18,10 @@ namespace SVM.VirtualMachine.Debug
         /// a maximum of 4 instructions succeeding the current instruction
         /// </summary>
         List<IInstruction> CodeFrame { get; }
+
+        /// <summary>
+        /// Contains reference to current instructions index in related list of instructions
+        /// </summary>
+        int currentInstructionIndex { get; }
     }
 }

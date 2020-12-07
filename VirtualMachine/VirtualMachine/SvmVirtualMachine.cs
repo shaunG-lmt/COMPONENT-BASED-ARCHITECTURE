@@ -226,17 +226,19 @@ namespace SVM
             foreach (IInstruction instruction in program)
             {
                 instruction.VirtualMachine = this;
-                program[programCounter].Run();
-                programCounter++;
+                
 
                 foreach (int point in debugPoints)
                 {
-                    if (point == programCounter)
+                    if (point == programCounter+1)
                     {
-                        IDebugFrame debugFrame = new DebugFrame(instruction, program);
+                        IDebugFrame debugFrame = new DebugFrame(instruction, program, programCounter);
                         debugger.Break(debugFrame);                      
                     }
                 }
+
+                program[programCounter].Run();
+                programCounter++;
             }
             #region TASKS 5 & 7 - MAY REQUIRE MODIFICATION BY THE STUDENT
             // For task 5 (debugging), you should construct a IDebugFrame instance and
@@ -266,7 +268,7 @@ namespace SVM
             lineNumber++;
             string[] tokens = null;
             if (instruction.Contains("\""))
-            {
+            { // loadstring
                 tokens = instruction.Split(new char[] { '\"' }, StringSplitOptions.RemoveEmptyEntries);
                 
                 // Remove any unnecessary whitespace
@@ -287,7 +289,17 @@ namespace SVM
                 debugPoints.Add(lineNumber);
                 if(tokens[0] == "*")
                 {
-                    tokens = new string[] { tokens[1] };
+                    if(tokens.Length == 3)
+                    {
+                        // Instruction with operand but not loadstring
+                        tokens = new string[] { tokens[1], tokens[2] };
+                    }
+                    else
+                    {
+                        // Instruction without operand
+                        tokens = new string[] { tokens[1] };
+                    }
+                    
                 }
                 else
                 {

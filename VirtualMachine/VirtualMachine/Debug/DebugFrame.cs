@@ -8,10 +8,12 @@ namespace SVM.VirtualMachine.Debug
     {
         public IInstruction _currentInstruction = null;
         public List<IInstruction> _codeFrame = null;
-        public DebugFrame(IInstruction currentInstruction, List<IInstruction> codeFrame)
+        public int _currentInstructionIndex;
+        public DebugFrame(IInstruction currentInstruction, List<IInstruction> codeFrame, int currentInstructionIndex)
         {
             _currentInstruction = currentInstruction;
             _codeFrame = codeFrame;
+            _currentInstructionIndex = currentInstructionIndex;
         }
         public IInstruction CurrentInstruction
         {
@@ -23,6 +25,11 @@ namespace SVM.VirtualMachine.Debug
         {
             get => _codeFrame;
             set => _codeFrame = value;
+        }
+        public int currentInstructionIndex
+        {
+            get => _currentInstructionIndex;
+            set => _currentInstructionIndex = value;
         }
     }
 }

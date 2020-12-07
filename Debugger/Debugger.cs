@@ -1,6 +1,7 @@
 ﻿using SVM;
 using SVM.VirtualMachine.Debug;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,13 +15,13 @@ namespace Debugger
     {
         private volatile static bool _isContinuePressed;
         private bool running = false;
-        private SvmVirtualMachine vm = null;
-        static string[] instructions = { "test", "test 3", "test 6" };
-        static string[] stackValues = { "test", "test 3", "test 6" };
-        public static Form form = new Form1(instructions, stackValues, "test 3" );
-        Thread thread = new Thread(new ThreadStart(delegate () { Application.Run(form); }));
+        private static SvmVirtualMachine vm = null;
+        private static Stack ts = null;
+        public static Form1 form = new Form1(debugFrame, ts); // DOES THE ISSUE PRESIDE HERE?
+        private static IDebugFrame debugFrame = null;
+
         public SvmVirtualMachine VirtualMachine 
-        { /*set => throw new NotImplementedException();*/
+        { 
             get { return vm; }
             set
             {
@@ -42,26 +43,29 @@ namespace Debugger
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
         }
-
         [STAThread]
         public void Break(IDebugFrame debugFrame)
         {
             if (!running)
             {
                 running = true;
+                form = new Form1(debugFrame, vm.Stack);
+
+                Thread thread = new Thread(() => Application.Run(form));
+       
                 thread.Start();
             }
             else
             {
                 IsContinuePressed = false;
-                // Create instance of form before adding to thread... run thread... on cont. invoke form instance to update values
-                //Form1.invoke
-                //form.Invoke(form.);
+                form.Invoke(form.myDelegate, new object[] { debugFrame, vm.Stack });
             }
-            while (!_isContinuePressed) { }
+
+            while (!_isContinuePressed) { continue;  }
 
             return;
         }
+       
     }
 }
 
