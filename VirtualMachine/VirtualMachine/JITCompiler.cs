@@ -95,7 +95,8 @@
                     try
                     {
                         Type.GetType(SVMtypes[i].AssemblyQualifiedName).GetInterface("IInstruction"); // If this fails -> exception.
-                        #region JON PLS EXPLAIN HOW TO SET THE OPERANDS OF AN INSTANCED TYPE I CANNOT.
+                        #region JON PLS EXPLAIN HOW TO REPLACE THE OPERANDS OF AN INSTANCED TYPE I CANNOT.
+                        // ??? BECAUSE INSTANCE STILL NEEDS TO BE USED LATER ON IN THE CODE ITS NOT POSSIBLE OR WOULD BREAK ANYWAYS ???
                         //foreach (IInstruction instance in instantiatedTypes)
                         //{
                         //    if (instance.ToString().Split(" ")[0] == "*") // Change to any basic instruction. Set to * for task 5.
