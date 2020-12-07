@@ -285,8 +285,14 @@ namespace SVM
             if (tokens[0].StartsWith("*"))
             {
                 debugPoints.Add(lineNumber);
-                tokens[0] = tokens[0].TrimStart('*', ' ');
-                
+                if(tokens[0] == "*")
+                {
+                    tokens = new string[] { tokens[1] };
+                }
+                else
+                {
+                    tokens[0] = tokens[0].TrimStart('*', ' ');
+                }
             }
 
             // Ensure the correct number of operands
