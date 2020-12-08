@@ -41,7 +41,7 @@ namespace Debugger
 
                 if (debugFrame.CodeFrame.Count != 0)
                 {
-                    if (debugFrame.CodeFrame.Count > 9 && debugFrame.currentInstructionIndex < debugFrame.CodeFrame.Count - 4)// AND INDEX IS 4 AWAY FROM LAST INDEX)
+                    if (debugFrame.CodeFrame.Count > 9 && debugFrame.currentInstructionIndex < debugFrame.CodeFrame.Count - 4)
                     {
                         for (int i = 4; i > 0; i--)
                         {
@@ -70,7 +70,13 @@ namespace Debugger
                         }
                         
                     }
-                    //else
+                    else
+                    {
+                        foreach(var instruction in debugFrame.CodeFrame)
+                        {
+                            instruction_listbox.Items.Add(instruction.ToString());
+                        }
+                    }
                 }
                 // Populate stack listbox
                 foreach (var data in stack)
