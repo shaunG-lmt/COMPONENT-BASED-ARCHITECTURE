@@ -6,6 +6,7 @@
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using System.Runtime.InteropServices;
     #endregion
     /// <summary>
     /// Utility class which generates compiles a textual representation
@@ -39,7 +40,58 @@
         private static List<Type> GetSVMTypes()
         {
             List<Type> types = new List<Type>();
-            return types;
+
+            // Get the array of runtime assemblies.
+            string[] runtimeAssemblies = Directory.GetFiles(RuntimeEnvironment.GetRuntimeDirectory(), "*.dll");
+            string[] svmAssemblies = Directory.GetFiles(Environment.CurrentDirectory);
+            // Create the list of assembly paths consisting of runtime assemblies and the inspected assembly.
+            var paths = new List<string>(runtimeAssemblies);
+
+            paths.AddRange(svmAssemblies);
+
+            // Create PathAssemblyResolver that can resolve assemblies using the created list.
+            var resolver = new PathAssemblyResolver(paths);
+
+            var mlc = new MetadataLoadContext(resolver);
+
+            using (mlc)
+            {
+                // Load assembly into MetadataLoadContext.
+                foreach (string path in paths)
+                {
+                    try
+                    {   //Inspect types through Metadata
+                        Assembly assembly = mlc.LoadFromAssemblyPath(path);
+                        try
+                        {
+                            foreach(Type type in assembly.GetTypes())
+                            {
+                                try
+                                {   
+                                    if (type.IsClass && type.GetInterface("IInstruction") != null) // Condition for assessing load
+                                    {
+                                        // Loop loaded assembly types.
+                                        Assembly loadedAssembly = Assembly.Load(assembly.FullName);
+                                        foreach(Type loadedType in loadedAssembly.GetTypes())
+                                        {
+                                            if(loadedType.GetInterface("IInstruction") != null)
+                                            {
+                                                types.Add(loadedType);
+                                            }
+                                        }
+                                        break;
+                                    }
+                                }
+                                catch (AmbiguousMatchException) { }
+                            }
+                        }
+                        catch (ReflectionTypeLoadException) { }
+                    }
+                    catch (BadImageFormatException) { }
+                    catch (FileNotFoundException) { }
+                }  
+            }
+            return types; // if null throw exception
         }
         #endregion
         internal static IInstruction CompileInstruction(string opcode)
