@@ -17,7 +17,7 @@
         #endregion
 
         #region Fields
-        private static Type[] SVMtypes = GetSVMTypes();
+        private static List<Type> SVMtypes = GetSVMTypes();
         private static List<IInstruction> instantiatedTypes = new List<IInstruction>();
         private static Type type;
         #endregion
@@ -32,24 +32,14 @@
         #endregion
 
         #region Non-public methods
-        private static Type[] GetSVMTypes()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private static List<Type> GetSVMTypes()
         {
-            Assembly loadedAssembly;
-            Assembly[] assems = AppDomain.CurrentDomain.GetAssemblies();
-            foreach (Assembly assem in assems)
-                if (assem.ToString().StartsWith("SVM"))
-                {
-                    loadedAssembly = assem;
-                    try
-                    {
-                        return loadedAssembly.GetTypes();
-                    }
-                    catch (Exception e)
-                    {
-                        throw new SvmCompilationException("Could not get types from: " + loadedAssembly.FullName, e);
-                    }
-                }
-            return SVMtypes;    
+            List<Type> types = new List<Type>();
+            return types;
         }
         #endregion
         internal static IInstruction CompileInstruction(string opcode)
@@ -57,7 +47,7 @@
             IInstruction instruction = null;
 
             #region TASK 1 - TO BE IMPLEMENTED BY THE STUDENT
-            for (int i = 0; i < SVMtypes.Length; i++)
+            for (int i = 0; i < SVMtypes.Count; i++)
             {
                 try
                 {
@@ -95,7 +85,7 @@
             IInstructionWithOperand instruction = null;
 
             #region TASK 1 - TO BE IMPLEMENTED BY THE STUDENT
-            for (int i = 0; i < SVMtypes.Length; i++)
+            for (int i = 0; i < SVMtypes.Count; i++)
             {
                 try
                 {
