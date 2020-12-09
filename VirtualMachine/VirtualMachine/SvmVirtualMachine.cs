@@ -262,73 +262,7 @@ namespace SVM
                                         memUsed));
             Console.Read();
         }
-        private string[] ParseLabel(string[] tokens, int lineNumber)
-        {
-            if (tokens[0].EndsWith('%'))
-            {
-                labelLineRef.Add(tokens[0].Trim('%'), lineNumber + 1);
-                if (tokens.Length == 3)
-                {
-                    // Instruction with operand but not loadstring
-                    tokens = new string[] { tokens[1], tokens[2] };
-                    return tokens;
-                }
-                else
-                {
-                    // Instruction without operand
-                    tokens = new string[] { tokens[1] };
-                    return tokens;
-                }
-            }
-            else
-            {
-                // loadstring with label or invalid labelling
-                inputValue = tokens[1];
-                tokens = tokens[0].Split(' ');
-                if (tokens[0].EndsWith('%'))
-                {
-                    labelLineRef.Add(tokens[0].Trim('%'), lineNumber + 1);
-                    tokens = new string[] { tokens[1], inputValue };
-                    return tokens;
-                }
-                else
-                {
-                    throw new SvmCompilationException("Incorrect label formatting. Labels must have a '%' at either side of the label name.");
-                }
 
-            }
-            
-        }
-        private string[] ParseDebug(string[] tokens, int lineNumber)
-        {
-            debugLineRef.Add(lineNumber + 1);
-            if (tokens[0] == "*")
-            {
-                if (tokens.Length == 4)// debug with label
-                {
-                    tokens = new string[] { tokens[1], tokens[2], tokens[3] };
-                    return tokens;
-                }
-                else if (tokens.Length == 3)
-                {
-                    // Instruction with operand but not loadstring
-                    tokens = new string[] { tokens[1], tokens[2] };
-                    return tokens;
-                }
-                else
-                {
-                    // Instruction without operand
-                    tokens = new string[] { tokens[1] };
-                    return tokens;
-                }
-            }
-            else
-            {
-                // loadstring debug formatting for compiler
-                tokens[0] = tokens[0].TrimStart('*', ' ');
-                return tokens;
-            }
-        }
         /// <summary>
         /// Parses a string from a .sml file containing a single
         /// SML instruction
@@ -338,7 +272,35 @@ namespace SVM
         private void ParseInstruction(string instruction, int lineNumber)
         {
             #region TASK 5 & 7 - MAY REQUIRE MODIFICATION BY THE STUDENT
+            lineNumber++;
+            if (instruction.StartsWith('*'))
+            {
+                debugLineRef.Add(lineNumber);
+                instruction = instruction.TrimStart('*', ' ');
+            }
+            if (instruction.StartsWith('%'))
+            {
+                string[] instructionSplit = instruction.Split(' ');
+                if(instructionSplit[0].EndsWith('%'))
+                {
+                    labelLineRef.Add(instructionSplit[0].Trim('%'), lineNumber);
+                    instruction = "";
+                    for (int i = 1; i < instructionSplit.Length; i++)
+                    {
+                        instruction += instructionSplit[i];
+                        if(i != instructionSplit.Length - 1)
+                        {
+                            instruction += " ";
+                        }
+                    }
+                }
+                else
+                {
+                    throw new SvmCompilationException("Incorrect label formatting. Labels must have a '%' at either side of the label name.");
+                }
+            }
             #endregion
+
             string[] tokens = null;
             if (instruction.Contains("\""))
             {
@@ -355,16 +317,6 @@ namespace SVM
                 // Tokenize the instruction string by separating on spaces
                 tokens = instruction.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             }
-
-            if (tokens[0].StartsWith('*'))
-            {
-                tokens = ParseDebug(tokens, lineNumber);
-            }
-            if (tokens[0].StartsWith('%'))
-            {
-                tokens = ParseLabel(tokens, lineNumber);
-            }
-            
 
             // Ensure the correct number of operands
             if (tokens.Length > 3)
