@@ -41,13 +41,18 @@ namespace SVM
         #endregion
 
         #region Fields
+        // Debug fields
         private IDebugger debugger = null;
         private List<int> debugLineRef = new List<int>();
-        private Dictionary<string, int> labelLineRef = new Dictionary<string, int>();
+        
+        // Branching fields
+        public Dictionary<string, int> labelLineRef = new Dictionary<string, int>();
+        private bool branching = false;
+
+        // Default fields
         private List<IInstruction> program = new List<IInstruction>();
         private Stack stack = new Stack();
         private int programCounter = 0;
-        private string inputValue;
         #endregion
 
         #region Constructors
@@ -224,36 +229,44 @@ namespace SVM
         {
             DateTime start = DateTime.Now;
             debugger.VirtualMachine = this;
-            #region TASK 2 - TO BE IMPLEMENTED BY THE STUDENT      
+            #region TASK 2 - TO BE IMPLEMENTED BY THE STUDENT, TASKS 5 & 7 - MAY REQUIRE MODIFICATION BY THE STUDENT     
+            // For task 5 (debugging), you should construct a IDebugFrame instance and
+            // call the Break() method on the IDebugger instance stored in the debugger field
+
             if (program.Count > 0)
             {
-                foreach (IInstruction instruction in program)
+                while (programCounter != program.Count)
                 {
-                    instruction.VirtualMachine = this;
-
+                    // Breakpoint Check
                     foreach (int point in debugLineRef)
                     {
-                        if (point == programCounter + 1)
+                        if (point == programCounter)
                         {
-                            IDebugFrame debugFrame = new DebugFrame(instruction, program, programCounter);
+                            IDebugFrame debugFrame = new DebugFrame(program[programCounter], program, programCounter);
                             debugger.Break(debugFrame);
                         }
                     }
-
+                    // Execute Instruction                
+                    program[programCounter].VirtualMachine = this;
                     program[programCounter].Run();
-                    programCounter++;
+
+                    if (!branching)
+                    {
+                        programCounter++;
+                        
+                    }
+                    else { branching = false; }
                 }
+                
             }
             else
             {
                 Console.WriteLine("File contains no instructions...");
             }
-            #region TASKS 5 & 7 - MAY REQUIRE MODIFICATION BY THE STUDENT
-            // For task 5 (debugging), you should construct a IDebugFrame instance and
-            // call the Break() method on the IDebugger instance stored in the debugger field
-            #endregion
-            #endregion
+
             
+            #endregion
+
             long memUsed = System.Environment.WorkingSet;
             TimeSpan elapsed = DateTime.Now - start;
             Console.WriteLine(String.Format(
@@ -264,6 +277,17 @@ namespace SVM
         }
 
         /// <summary>
+        /// Change programCounter to the corrosponding value of the label when branching instruction condition is met.
+        /// Program execution switches to the instruction which was labelled.
+        /// </summary>
+        /// <param name="label">Name of the label for program execution to switch to in the event of branching instruction condition being met.</param>
+        public void ExecuteBranching(string label)
+        {
+            programCounter = labelLineRef[label];
+            branching = true;
+        }
+
+        /// <summary>
         /// Parses a string from a .sml file containing a single
         /// SML instruction
         /// </summary>
@@ -271,19 +295,29 @@ namespace SVM
         /// of an instruction</param>
         private void ParseInstruction(string instruction, int lineNumber)
         {
-            #region TASK 5 & 7 - MAY REQUIRE MODIFICATION BY THE STUDENT
-            lineNumber++;
+            #region TASK 5 & 7 - DEBUG/LABEL PARSING
+
+            // Parse debug
             if (instruction.StartsWith('*'))
             {
                 debugLineRef.Add(lineNumber);
                 instruction = instruction.TrimStart('*', ' ');
             }
+
+            //Parse Label
             if (instruction.StartsWith('%'))
             {
                 string[] instructionSplit = instruction.Split(' ');
                 if(instructionSplit[0].EndsWith('%'))
                 {
-                    labelLineRef.Add(instructionSplit[0].Trim('%'), lineNumber);
+                    try
+                    {
+                        labelLineRef.Add(instructionSplit[0].Trim('%'), lineNumber);
+                    }
+                    catch 
+                    {
+                        throw new SvmCompilationException("Label with the name '" + instructionSplit[0].Trim('%') +"' already exists. Labels must have a unique name.");
+                    }
                     instruction = "";
                     for (int i = 1; i < instructionSplit.Length; i++)
                     {
@@ -299,6 +333,7 @@ namespace SVM
                     throw new SvmCompilationException("Incorrect label formatting. Labels must have a '%' at either side of the label name.");
                 }
             }
+
             #endregion
 
             string[] tokens = null;
@@ -337,7 +372,7 @@ namespace SVM
                     break;
             }
         }
-
+        #endregion
 
         #region Validate command line
         /// <summary>
@@ -376,7 +411,6 @@ namespace SVM
             Console.WriteLine("svm program_name.sml");
         }
         #endregion
-        #endregion
 
         #region System.Object overrides
         /// <summary>
@@ -406,6 +440,8 @@ namespace SVM
         {
             return base.ToString();
         }
+
+        
         #endregion
 
     }
