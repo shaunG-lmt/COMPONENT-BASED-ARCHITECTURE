@@ -62,22 +62,24 @@
         #region TASK 3 - TO BE IMPLEMENTED BY THE STUDENT
         public override void Run() 
         {
-            try
+            if (VirtualMachine.Stack.Count == 0)
             {
-                if (VirtualMachine.Stack.Count == 0)
-                {
-                    throw new SvmRuntimeException(String.Format(BaseInstruction.StackUnderflowMessage, 
-                                                    this.ToString(), VirtualMachine.ProgramCounter));
-                }
-                
-                int op1 = (int)VirtualMachine.Stack.Pop();
-                op1--;
-                VirtualMachine.Stack.Push(op1);
-            }
-            catch (InvalidCastException)
-            {
-                throw new SvmRuntimeException(String.Format(BaseInstruction.OperandOfWrongTypeMessage, 
+                throw new SvmRuntimeException(String.Format(BaseInstruction.StackUnderflowMessage, 
                                                 this.ToString(), VirtualMachine.ProgramCounter));
+            }
+            else
+            {
+                try
+                {
+                    int op1 = Convert.ToInt32(VirtualMachine.Stack.Pop().ToString());
+                    op1--;
+                    VirtualMachine.Stack.Push(op1);
+                }
+                catch (Exception e)
+                {
+                    throw new SvmRuntimeException(String.Format(BaseInstruction.OperandOfWrongTypeMessage,
+                                                    this.ToString(), VirtualMachine.ProgramCounter), e);
+                }
             }
         }
         #endregion
