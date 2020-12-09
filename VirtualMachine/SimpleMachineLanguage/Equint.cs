@@ -1,21 +1,18 @@
-﻿using System;
+﻿using SVM.VirtualMachine;
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
-using SVM.VirtualMachine;
-using System.Windows.Forms;
-using System.Threading;
-using System.Drawing;
 
-namespace SML_Extensions
+namespace SVM.SimpleMachineLanguage
 {
-    class DisplayImage : BaseInstructionWithOperand
+    class Equint : BaseInstructionWithOperand
     {
         #region Constants
-        static readonly List<string> ImageExtensions = new List<string> { ".JPG", ".JPE", ".BMP", ".GIF", ".PNG" };
         #endregion
 
         #region Fields
+        private int stackValue;
+        private int inputValue;
         #endregion
 
         #region Constructors
@@ -59,38 +56,29 @@ namespace SML_Extensions
             return base.ToString();
         }
         #endregion
-
-        #region IInstruction Members
+        /// <summary>
+        /// Jumps to the SML instruction with a given label with the value on the top of the stack is equal to the one given.
+        /// </summary>
         public override void Run()
         {
-            var path = VirtualMachine.Stack.Peek();
-            if (File.Exists(path.ToString()))
+            bool validStackValue = Int32.TryParse(VirtualMachine.Stack.Peek().ToString(), out stackValue);
+            if(validStackValue)
             {
-                if(ImageExtensions.Contains(Path.GetExtension(path.ToString()).ToUpperInvariant()))
+                bool validValue = Int32.TryParse(Operands[0], out inputValue);
+                if (validValue)
                 {
-                    var f = new Form();
-                    PictureBox pictureBox = new PictureBox();
-                    pictureBox.Image = Image.FromFile(path.ToString());
-                    pictureBox.SizeMode = PictureBoxSizeMode.AutoSize;
-                    f.Controls.Add(pictureBox);
-                    Thread thread = new Thread(() => Application.Run(f));
 
-                    thread.Start();
-                    
                 }
                 else
                 {
-                    throw new SvmRuntimeException("File path on top of stack is not valid image. File path: " + path);
+                    throw new SvmRuntimeException("Equint value was in an integer. Instruction given: equint " + Operands[0].ToString());
                 }
-                
             }
             else
             {
-                throw new SvmRuntimeException("Value on top of stack point to file does not exist. Value at top of stack currently: " + path);
+                throw new SvmRuntimeException("Value at the top of the stack was not an integer. Top stack value: " + VirtualMachine.Stack.Peek());
             }
-
             
         }
-        #endregion
     }
 }

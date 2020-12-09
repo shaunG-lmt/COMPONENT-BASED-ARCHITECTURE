@@ -26,6 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="equint test.sml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Sample.sml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

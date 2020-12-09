@@ -1,8 +1,5 @@
-﻿loadstring "time for some fun..."
-writestring
-* loadstring "maybe not as hard as I thought"
-writestring
-loadint 5
-writestring
-* loadstring "moist rag"
-writestring
+﻿loadstring "test"
+%writeMsg% writestring
+%loadt% loadstring "label test"
+%loade% loadint 5
+* incr
