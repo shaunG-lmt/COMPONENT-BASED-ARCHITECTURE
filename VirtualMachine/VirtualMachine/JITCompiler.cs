@@ -44,7 +44,6 @@
             // Get the array of runtime assemblies.
             string[] runtimeAssemblies = Directory.GetFiles(RuntimeEnvironment.GetRuntimeDirectory(), "*.dll");
             string[] svmAssemblies = Directory.GetFiles(Environment.CurrentDirectory);
-            // Create the list of assembly paths consisting of runtime assemblies and the inspected assembly.
             var paths = new List<string>(runtimeAssemblies);
 
             paths.AddRange(svmAssemblies);
@@ -53,7 +52,6 @@
             var resolver = new PathAssemblyResolver(paths);
 
             var mlc = new MetadataLoadContext(resolver);
-
             using (mlc)
             {
                 // Load assembly into MetadataLoadContext.
@@ -82,16 +80,15 @@
                                         break;
                                     }
                                 }
-                                catch (AmbiguousMatchException) { }
+                                catch (Exception) { }
                             }
                         }
-                        catch (ReflectionTypeLoadException) { }
+                        catch (Exception) { }
                     }
-                    catch (BadImageFormatException) { }
-                    catch (FileNotFoundException) { }
+                    catch (Exception) { }
                 }  
             }
-            return types; // if null throw exception
+            return types; // TODO: if null throw exception
         }
         #endregion
         internal static IInstruction CompileInstruction(string opcode)
