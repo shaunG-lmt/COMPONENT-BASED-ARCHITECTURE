@@ -65,7 +65,24 @@
                             foreach(Type type in assembly.GetTypes())
                             {
                                 try
-                                {   
+                                {
+                                    /* TODO: JON: SML EXTENTSIONS DLL PRODUCING "THIS PE IS NOT A MANAGED EXECUTABLE"... VARIOUS ROUTES EXPLORED... CORFLAGS TO ASSESS 64/32bit, REBUILDING, REPLACING WITH OG FILES :(
+                                     - IT CAN BE LOADED INTO MLC BUT METADATA SUCH AS: ISCLASS, BASETYPE, PRODUCES 'SYSTEM.BADIMAGEFORMATEXCEPTION' :((((
+                                     - DLL CANNOT BE LOADED BY: ASSEMBLY.LOAD(ASSEMBLY.FULLNAME) -> CANNOT LOCATE IT??? */
+                                    #region SML EXTENSIONS HARD CODE
+                                    if (assembly.FullName.Contains("SML Extensions"))
+                                    {
+                                        Assembly loadedAssembly = Assembly.LoadFrom(path);
+                                        //Assembly loadedAssembly = Assembly.Load(assembly.FullName);
+                                        foreach (Type loadedType in loadedAssembly.GetTypes())
+                                        {
+                                            if (loadedType.GetInterface("IInstruction") != null)
+                                            {
+                                                types.Add(loadedType);
+                                            }
+                                        }
+                                    }
+                                    #endregion
                                     if (type.IsClass && type.GetInterface("IInstruction") != null) // Condition for assessing load
                                     {
                                         // Loop loaded assembly types.
@@ -83,7 +100,7 @@
                                 catch (Exception) { }
                             }
                         }
-                        catch (Exception) { }
+                        catch (ReflectionTypeLoadException ex) { }
                     }
                     catch (Exception) { }
                 }  
