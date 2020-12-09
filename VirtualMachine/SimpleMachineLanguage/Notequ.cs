@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SVM.SimpleMachineLanguage
 {
-    class Equint : BaseInstructionWithOperand
+    class Notequ : BaseInstructionWithOperand
     {
         #region Constants
         #endregion
@@ -57,31 +57,29 @@ namespace SVM.SimpleMachineLanguage
         }
         #endregion
         /// <summary>
-        /// Jumps to the SML instruction with a given label when the value on the top of the stack is equal to the one given.
+        /// Jumps to the SML instruction with a given label when the top two values (any type) on the stack are not equal.
         /// </summary>
         public override void Run()
         {
-            bool validStackValue = Int32.TryParse(VirtualMachine.Stack.Peek().ToString(), out stackValue);
-            if(validStackValue)
+            try
             {
-                bool validValue = Int32.TryParse(Operands[0], out inputValue);
-                if (validValue)
+                string topStackValue = VirtualMachine.Stack.Pop().ToString();
+                if (topStackValue.Equals(VirtualMachine.Stack.Peek().ToString()))
                 {
-                    if (inputValue == stackValue)
-                    {
-                        VirtualMachine.ExecuteBranching(Operands[1]);
-                    }
+                    VirtualMachine.Stack.Push(topStackValue);
+                    return;
                 }
                 else
                 {
-                    throw new SvmRuntimeException("Equint value was not an integer. Instruction given: equint " + Operands[0].ToString());
+                    VirtualMachine.Stack.Push(topStackValue);
+                    VirtualMachine.ExecuteBranching(Operands[0]);
                 }
             }
-            else
+            catch
             {
-                throw new SvmRuntimeException("Value at the top of the stack was not an integer. Top stack value: " + VirtualMachine.Stack.Peek());
+                throw new SvmRuntimeException(String.Format(BaseInstruction.StackUnderflowMessage,
+                                                this.ToString(), VirtualMachine.ProgramCounter));
             }
-            
         }
     }
 }

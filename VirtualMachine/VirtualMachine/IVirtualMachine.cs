@@ -11,5 +11,6 @@ namespace SVM.VirtualMachine
 
         int ProgramCounter { get; }
 
+        void ExecuteBranching(string label);
     }
 }

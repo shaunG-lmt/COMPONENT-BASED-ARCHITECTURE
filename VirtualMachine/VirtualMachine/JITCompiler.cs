@@ -66,14 +66,13 @@
                             {
                                 try
                                 {
-                                    /* TODO: JON: SML EXTENTSIONS DLL PRODUCING "THIS PE IS NOT A MANAGED EXECUTABLE"... VARIOUS ROUTES EXPLORED... CORFLAGS TO ASSESS 64/32bit, REBUILDING, REPLACING WITH OG FILES :(
+                                    /* TODO: JON: SML EXTENTSIONS DLL PRODUCING "THIS PE IS NOT A MANAGED EXECUTABLE"... VARIOUS ROUTES EXPLORED... CORFLAGS TO ASSESS 64/32bit, REBUILDING WITH OG FILES :(
                                      - IT CAN BE LOADED INTO MLC BUT METADATA SUCH AS: ISCLASS, BASETYPE, PRODUCES 'SYSTEM.BADIMAGEFORMATEXCEPTION' :((((
-                                     - DLL CANNOT BE LOADED BY: ASSEMBLY.LOAD(ASSEMBLY.FULLNAME) -> CANNOT LOCATE IT??? */
+                                     - DLL CANNOT BE LOADED BY: ASSEMBLY.LOAD(ASSEMBLY.FULLNAME) -> CANNOT LOCATE IT??? EVEN THOUGH FULLNAME CAN BE ACCESSED AND THE PATH IS IN THE PATH RESOLVER */
                                     #region SML EXTENSIONS HARD CODE
                                     if (assembly.FullName.Contains("SML Extensions"))
                                     {
                                         Assembly loadedAssembly = Assembly.LoadFrom(path);
-                                        //Assembly loadedAssembly = Assembly.Load(assembly.FullName);
                                         foreach (Type loadedType in loadedAssembly.GetTypes())
                                         {
                                             if (loadedType.GetInterface("IInstruction") != null)
@@ -100,7 +99,7 @@
                                 catch (Exception) { }
                             }
                         }
-                        catch (ReflectionTypeLoadException ex) { }
+                        catch (ReflectionTypeLoadException) { }
                     }
                     catch (Exception) { }
                 }  
