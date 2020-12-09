@@ -28,7 +28,7 @@ namespace SVM
         [DllImport("Kernel32.dll")]
         private static extern IntPtr GetConsoleWindow();
 
-        [DllImport("Kernel32.dll")]
+        [DllImport("User32.dll")]
         private static extern IntPtr ShowWindow(IntPtr hWnd, int nCmdShow);
         #endregion
 
@@ -116,6 +116,7 @@ namespace SVM
                 catch (SvmRuntimeException err)
                 {
                     Console.WriteLine(RuntimeErrorMessage, err.Message);
+                    Console.Read();
                 }
             }
 
