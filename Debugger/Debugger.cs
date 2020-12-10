@@ -17,7 +17,7 @@ namespace Debugger
         private bool running = false;
         private static SvmVirtualMachine vm = null;
         private static Stack ts = null;
-        public static Form1 form = new Form1(debugFrame, ts); // DOES THE ISSUE PRESIDE HERE?
+        public static Form1 form = new Form1(debugFrame, ts);
         private static IDebugFrame debugFrame = null;
 
         public SvmVirtualMachine VirtualMachine 

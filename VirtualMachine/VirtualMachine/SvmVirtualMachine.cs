@@ -228,10 +228,11 @@ namespace SVM
         private void Run()
         {
             DateTime start = DateTime.Now;
-            debugger.VirtualMachine = this;
-            #region TASK 2 - TO BE IMPLEMENTED BY THE STUDENT, TASKS 5 & 7 - MAY REQUIRE MODIFICATION BY THE STUDENT     
+
+            #region TASK 2 - TO BE IMPLEMENTED BY THE STUDENT, TASKS 5 & 7 - MAY REQUIRE MODIFICATION BY THE STUDENT    
             // For task 5 (debugging), you should construct a IDebugFrame instance and
             // call the Break() method on the IDebugger instance stored in the debugger field
+            debugger.VirtualMachine = this;
 
             if (program.Count > 0)
             {
@@ -264,7 +265,6 @@ namespace SVM
                 Console.WriteLine("File contains no instructions...");
             }
 
-            
             #endregion
 
             long memUsed = System.Environment.WorkingSet;

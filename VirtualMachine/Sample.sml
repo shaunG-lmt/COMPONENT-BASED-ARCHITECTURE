@@ -1,8 +1,6 @@
-﻿loadstring "achievement"
-loadint 5
-loadint 0
-%writeMsg% incr
-notequ writeMsg
-loadint 66
+﻿loadint 10
+%while% decr
+bltint 1 while
+loadstring "Count ="
 writestring
 * writestring
