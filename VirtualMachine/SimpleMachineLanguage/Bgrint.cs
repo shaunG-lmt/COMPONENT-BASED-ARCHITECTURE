@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SVM.SimpleMachineLanguage
 {
-    public class Equint : BaseInstructionWithOperand
+    public class Bgrint : BaseInstructionWithOperand
     {
         #region Constants
         #endregion
@@ -57,17 +57,17 @@ namespace SVM.SimpleMachineLanguage
         }
         #endregion
         /// <summary>
-        /// Jumps to the SML instruction with a given label when the value on the top of the stack is equal to the one given.
+        /// Jumps to the SML instruction with a given label when the top two values (any type) on the stack are not equal.
         /// </summary>
         public override void Run()
         {
             bool validStackValue = Int32.TryParse(VirtualMachine.Stack.Peek().ToString(), out stackValue);
-            if(validStackValue)
+            if (validStackValue)
             {
                 bool validValue = Int32.TryParse(Operands[0], out inputValue);
                 if (validValue)
                 {
-                    if (inputValue == stackValue)
+                    if (inputValue > stackValue)
                     {
                         VirtualMachine.ExecuteBranching(Operands[1]);
                     }

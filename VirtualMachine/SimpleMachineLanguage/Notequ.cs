@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SVM.SimpleMachineLanguage
 {
-    class Notequ : BaseInstructionWithOperand
+    public class Notequ : BaseInstructionWithOperand
     {
         #region Constants
         #endregion
