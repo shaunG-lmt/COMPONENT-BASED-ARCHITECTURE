@@ -43,7 +43,10 @@
 
             // Get the array of runtime assemblies.
             string[] svmAssemblies = Directory.GetFiles(Environment.CurrentDirectory);
-            var paths = new List<string>(svmAssemblies);
+            string[] runtimeAssemblies = Directory.GetFiles(RuntimeEnvironment.GetRuntimeDirectory(), "*.dll");
+
+            var paths = new List<string>(runtimeAssemblies);
+            paths.AddRange(svmAssemblies);
 
             // Create PathAssemblyResolver that can resolve assemblies using the created list.
             var resolver = new PathAssemblyResolver(paths);
@@ -130,15 +133,21 @@
                             return instantiatedTypes.Last();
                         }
                     }
+                    else
+                    {
+                        throw new SvmCompilationException("Type could not be loaded for instruction: " + opcode);
+                    }
                 }
                 catch (Exception e)
                 {
                     throw new SvmCompilationException("Type could not be loaded for instruction: " + opcode, e);
                 }
-                
             }
             #endregion
-
+            if (instruction == null)
+            {
+                throw new SvmCompilationException("Instruction could not be loaded: " + opcode);
+            }
             return instruction; // null
         }
 
@@ -169,7 +178,10 @@
                 }
             }
             #endregion
-
+            if (instruction == null)
+            {
+                throw new SvmCompilationException("Instruction could not be loaded: " + opcode);
+            }
             return instruction; // null
         }
     }

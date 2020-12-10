@@ -19,17 +19,9 @@ namespace SVM
     public sealed class SvmVirtualMachine : IVirtualMachine
     {
         #region stupid console disappearance act fix
-        [DllImport("Kernel32.dll")]
-        private static extern bool AllocConsole();
-
-        [DllImport("Kernel32.dll")]
-        private static extern bool FreeConsole();
-
-        [DllImport("Kernel32.dll")]
-        private static extern IntPtr GetConsoleWindow();
-
-        [DllImport("User32.dll")]
-        private static extern IntPtr ShowWindow(IntPtr hWnd, int nCmdShow);
+        [DllImport("kernel32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool AllocConsole();
         #endregion
 
         #region Constants
@@ -93,22 +85,7 @@ namespace SVM
         #region Entry Point
         static void Main(string[] args)
         {
-            const int SW_HIDE = 0, SW_SHOW = 5; //WinAPI #defines
-            IntPtr hWnd = SvmVirtualMachine.GetConsoleWindow();
-
-            if (hWnd == IntPtr.Zero)
-            {
-                if (!SvmVirtualMachine.AllocConsole())
-                {
-                    return;
-                }
-            }
-
-            else
-            {
-                SvmVirtualMachine.ShowWindow(hWnd, SW_SHOW);
-            }
-
+            AllocConsole();
             if (CommandLineIsValid(args))
             {
                 SvmVirtualMachine vm = new SvmVirtualMachine();
@@ -117,24 +94,16 @@ namespace SVM
                     vm.Compile(args[0]);
                     vm.Run();
                 }
-                catch (SvmCompilationException)
+                catch (SvmCompilationException e)
                 {
+                    Console.WriteLine(e.Message);
+                    Console.Read();
                 }
                 catch (SvmRuntimeException err)
                 {
                     Console.WriteLine(RuntimeErrorMessage, err.Message);
                     Console.Read();
                 }
-            }
-
-            if (hWnd == IntPtr.Zero)
-            {
-                SvmVirtualMachine.FreeConsole();
-            }
-
-            else
-            {
-                SvmVirtualMachine.ShowWindow(hWnd, SW_HIDE);
             }
         }
         #endregion
