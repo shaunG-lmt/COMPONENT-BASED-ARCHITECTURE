@@ -62,7 +62,7 @@
                         Assembly assembly = mlc.LoadFromAssemblyPath(path);
                         try
                         {
-                            foreach(Type type in assembly.GetTypes())
+                            foreach (Type type in assembly.GetTypes())
                             {
                                 try
                                 {
@@ -86,9 +86,9 @@
                                     {
                                         // Loop loaded assembly types.
                                         Assembly loadedAssembly = Assembly.Load(assembly.FullName);
-                                        foreach(Type loadedType in loadedAssembly.GetTypes())
+                                        foreach (Type loadedType in loadedAssembly.GetTypes())
                                         {
-                                            if(loadedType.GetInterface("IInstruction") != null)
+                                            if (loadedType.GetInterface("IInstruction") != null)
                                             {
                                                 types.Add(loadedType);
                                             }
@@ -99,9 +99,31 @@
                                 catch (Exception) { }
                             }
                         }
-                        catch (ReflectionTypeLoadException) { }
+                        catch (ReflectionTypeLoadException ex)
+                        {
+                            foreach (Type type in ex.Types)
+                            {
+                                try
+                                {
+                                    if (type.IsClass && type.GetInterface("IInstruction") != null) // Condition for assessing load
+                                    {
+                                        // Loop loaded assembly types.
+                                        Assembly loadedAssembly = Assembly.Load(assembly.FullName);
+                                        foreach (Type loadedType in loadedAssembly.GetTypes())
+                                        {
+                                            if (loadedType.GetInterface("IInstruction") != null)
+                                            {
+                                                types.Add(loadedType);
+                                            }
+                                        }
+                                        break;
+                                    }
+                                }
+                                catch (Exception) { }
+                            }
+                        }
                     }
-                    catch (Exception) { }
+                    catch (Exception) { /*bad file path */}
                 }  
             }
             return types; // TODO: if null throw exception
