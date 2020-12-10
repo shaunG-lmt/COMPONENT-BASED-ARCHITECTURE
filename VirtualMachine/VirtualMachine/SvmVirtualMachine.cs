@@ -18,7 +18,7 @@ namespace SVM
     /// </summary>
     public sealed class SvmVirtualMachine : IVirtualMachine
     {
-        #region stupid console disappearance act fix
+        #region Show Console Fix
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool AllocConsole();
@@ -86,11 +86,30 @@ namespace SVM
         static void Main(string[] args)
         {
             AllocConsole();
+            try
+            {
+                if (args[1] == "VALIDHASH")
+                {
+                    JITCompiler.ValidateHashAssemblies();
+                }
+            }
+            catch (IndexOutOfRangeException)
+            { 
+                Console.WriteLine("Hash Validation not performed. Enter 'VALIDHASH' after your input file to validate assemblies"); 
+            }
+            catch (SvmCompilationException e)
+            {
+                Console.WriteLine(e.Message);
+                Console.Read();
+                return;
+            }
+            args =new string[]{ args[0] };
             if (CommandLineIsValid(args))
             {
                 SvmVirtualMachine vm = new SvmVirtualMachine();
                 try
                 {
+                    
                     vm.Compile(args[0]);
                     vm.Run();
                 }

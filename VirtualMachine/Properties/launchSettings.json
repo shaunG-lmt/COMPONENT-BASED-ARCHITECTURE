@@ -2,7 +2,7 @@
   "profiles": {
     "SVM": {
       "commandName": "Project",
-      "commandLineArgs": "Sample.sml"
+      "commandLineArgs": "Sample.sml VALIDHASH"
     }
   }
 }

@@ -3,10 +3,14 @@
     #region Using directives
     using System;
     using System.Collections.Generic;
+    using System.Collections.Specialized;
+    using System.Configuration;
     using System.IO;
     using System.Linq;
     using System.Reflection;
     using System.Runtime.InteropServices;
+    using System.Security.Cryptography;
+    using System.Text;
     #endregion
     /// <summary>
     /// Utility class which generates compiles a textual representation
@@ -30,6 +34,61 @@
         #endregion
 
         #region Public methods
+        public static void ValidateHashAssemblies()
+        {
+            NameValueCollection sAll;
+            sAll = ConfigurationManager.AppSettings;
+            var keys = sAll.AllKeys;
+            string[] svmAssemblies = Directory.GetFiles(Environment.CurrentDirectory, "*.dll");
+            foreach (string path in svmAssemblies)
+            {
+                if (path.Contains("Debugger.dll") || path.Contains("SML Extensions.dll"))
+                {
+                    string[] pathSplit = path.Split("\\");
+                    switch (pathSplit[pathSplit.Length - 1])
+                    {
+                        case "Debugger.dll":
+                            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                            {
+                                if (HashFile(fs) != sAll.Get("Debugger.dll"))
+                                {
+                                    throw new SvmCompilationException("Debugger.dll could not be validated. Update config file.");
+                                }
+                            }
+                            break;
+                        case "SML Extensions.dll":
+                            using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                            {
+                                if (HashFile(fs) != sAll.Get("SML Extensions.dll"))
+                                {
+                                    throw new SvmCompilationException("Debugger.dll could not be validated. Update config file.");
+                                }
+                            }
+                            break;
+                    }
+                }
+            }
+            Console.WriteLine("Assemblies are valid...");
+        }
+
+        public static string HashFile(FileStream stream)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            if (stream != null)
+            {
+                stream.Seek(0, SeekOrigin.Begin);
+
+                MD5 md5 = MD5CryptoServiceProvider.Create();
+                byte[] hash = md5.ComputeHash(stream);
+                foreach (byte b in hash)
+                    sb.Append(b.ToString("x2"));
+
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+
+            return sb.ToString();
+        }
         #endregion
 
         #region Non-public methods
@@ -152,6 +211,7 @@
                             }
                             // Instance not found -> add new.
                             instantiatedTypes.Add((IInstruction)Activator.CreateInstance(Type.GetType(SVMtypes[i].AssemblyQualifiedName)));
+                            //(IInstruction)Activator.CreateInstance(Type.GetType(types[type].AssemblyQualifiedName))
                             return instantiatedTypes.Last();
                         }
                     }
