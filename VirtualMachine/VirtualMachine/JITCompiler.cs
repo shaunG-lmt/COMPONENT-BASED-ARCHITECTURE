@@ -42,11 +42,8 @@
             List<Type> types = new List<Type>();
 
             // Get the array of runtime assemblies.
-            string[] runtimeAssemblies = Directory.GetFiles(RuntimeEnvironment.GetRuntimeDirectory(), "*.dll");
             string[] svmAssemblies = Directory.GetFiles(Environment.CurrentDirectory);
-            var paths = new List<string>(runtimeAssemblies);
-
-            paths.AddRange(svmAssemblies);
+            var paths = new List<string>(svmAssemblies);
 
             // Create PathAssemblyResolver that can resolve assemblies using the created list.
             var resolver = new PathAssemblyResolver(paths);
