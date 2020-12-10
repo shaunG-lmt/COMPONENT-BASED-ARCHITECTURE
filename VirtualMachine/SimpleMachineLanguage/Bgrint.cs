@@ -79,7 +79,7 @@ namespace SVM.SimpleMachineLanguage
                     }
                     else
                     {
-                        throw new SvmRuntimeException("Equint value was not an integer. Instruction given: equint " + Operands[0].ToString());
+                        throw new SvmRuntimeException("Bgrint value was not an integer. Instruction given: bgrint " + Operands[0].ToString());
                     }
                 }
                 else
