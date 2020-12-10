@@ -61,7 +61,12 @@ namespace SVM.SimpleMachineLanguage
         /// </summary>
         public override void Run()
         {
-            try
+            if (VirtualMachine.Stack.Count < 2)
+            {
+                throw new SvmRuntimeException(String.Format(BaseInstruction.StackUnderflowMessage,
+                                            this.ToString(), VirtualMachine.ProgramCounter));
+            }
+            else
             {
                 string topStackValue = VirtualMachine.Stack.Pop().ToString();
                 if (topStackValue.Equals(VirtualMachine.Stack.Peek().ToString()))
@@ -74,11 +79,6 @@ namespace SVM.SimpleMachineLanguage
                     VirtualMachine.Stack.Push(topStackValue);
                     VirtualMachine.ExecuteBranching(Operands[0]);
                 }
-            }
-            catch
-            {
-                throw new SvmRuntimeException(String.Format(BaseInstruction.StackUnderflowMessage,
-                                                this.ToString(), VirtualMachine.ProgramCounter));
             }
         }
     }

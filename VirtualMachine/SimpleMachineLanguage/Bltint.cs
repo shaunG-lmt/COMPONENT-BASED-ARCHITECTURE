@@ -61,25 +61,31 @@ namespace SVM.SimpleMachineLanguage
         /// </summary>
         public override void Run()
         {
-            bool validStackValue = Int32.TryParse(VirtualMachine.Stack.Peek().ToString(), out stackValue);
-            if (validStackValue)
+            if (VirtualMachine.Stack.Count == 0)
             {
-                bool validValue = Int32.TryParse(Operands[0], out inputValue);
-                if (validValue)
+                throw new SvmRuntimeException(String.Format(BaseInstruction.StackUnderflowMessage,
+                                            this.ToString(), VirtualMachine.ProgramCounter));
+            }
+            else
+            {
+                if (Int32.TryParse(VirtualMachine.Stack.Peek().ToString(), out stackValue))
                 {
-                    if (inputValue < stackValue)
+                    if (Int32.TryParse(Operands[0], out inputValue))
                     {
-                        VirtualMachine.ExecuteBranching(Operands[1]);
+                        if (inputValue < stackValue)
+                        {
+                            VirtualMachine.ExecuteBranching(Operands[1]);
+                        }
+                    }
+                    else
+                    {
+                        throw new SvmRuntimeException("Equint value was not an integer. Instruction given: equint " + Operands[0].ToString());
                     }
                 }
                 else
                 {
-                    throw new SvmRuntimeException("Equint value was not an integer. Instruction given: equint " + Operands[0].ToString());
+                    throw new SvmRuntimeException("Value at the top of the stack was not an integer. Top stack value: " + VirtualMachine.Stack.Peek());
                 }
-            }
-            else
-            {
-                throw new SvmRuntimeException("Value at the top of the stack was not an integer. Top stack value: " + VirtualMachine.Stack.Peek());
             }
         }
     }
